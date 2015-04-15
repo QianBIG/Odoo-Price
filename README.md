@@ -3,5 +3,6 @@ This repository include some <a href="https://www.odoo.com">odoo</a> modules for
 ----
 
 Modules introduce
-
-1.emc_price_history: View Product Price History on Customer,Supplier,Product(the data is base on invoice lines).
+-----------------
+1.emc_price_history: 
+View Product Price History on Customer,Supplier,Product(the data is base on invoice lines).
