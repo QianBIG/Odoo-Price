@@ -5,7 +5,7 @@
             <field name="name">account.invoice.line.form2</field>
             <field name="model">account.invoice.line</field>
             <field name="arch" type="xml">
-                <form string="Invoice Line">
+                <form string="Invoice Line" readonly="1">
                     <sheet>
                         <group>
                             <group>
