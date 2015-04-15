@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="view_invoice_line_form2" model="ir.ui.view">
+            <field name="name">account.invoice.line.form2</field>
+            <field name="model">account.invoice.line</field>
+            <field name="arch" type="xml">
+                <form string="Invoice Line">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="partner_id"/>
+                                <field name="invoice_id"/>
+                                <field name="c_date"/>
+                                <field name="product_id"/>
+                                <label for="quantity"/>
+                                <div>
+                                    <field name="quantity" class="oe_inline"/>
+                                    <field name="uos_id" class="oe_inline" groups="product.group_uom"/>
+                                </div>
+                                <field name="price_unit"/>
+                                <field name="discount" groups="sale.group_discount_per_so_line"/>
+                            </group>
+                            <group>
+                                <field name="c_type"/>
+                                <field name="account_id"/>
+                                <field name="invoice_line_tax_id" widget="many2many_tags"/>
+                                <field name="account_analytic_id" groups="analytic.group_analytic_accounting"/>
+                                <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+                                <field name="c_state"/>
+                            </group>
+                        </group>
+                        <label for="name"/>
+                        <field name="name"/>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        
+        <record model="ir.ui.view" id="view_invoice_line_tree">
+            <field name="name">account.invoice.line.tree</field>
+            <field name="model">account.invoice.line</field>
+            <field name="inherit_id" ref="account.view_invoice_line_tree"/>
+            <field name="arch" type="xml">
+                
+                <field name="name" position="before">
+                    <field name="partner_id"/>
+                    <field name="invoice_id"/>
+                    <field name="c_date"/>                    
+                    <field name="product_id"/>                    
+                </field>
+                <field name="name" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>
+                <field name="account_id" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>
+                <field name="quantity" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>
+                <field name="uos_id" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>
+                <field name="discount" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>            
+                <field name="price_subtotal" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>           
+                <field name="price_subtotal" position="after">
+                    <field name="c_type"/>
+                </field>
+            </field>    
+        </record>
+        
+        <record id="view_account_invoice_line_filter" model="ir.ui.view">
+            <field name="name">account.invoice.line.select</field>
+            <field name="model">account.invoice.line</field>
+            <field name="arch" type="xml">
+                <search string="Search Invoice Line">
+                    <field name="product_id" string="Product"/>
+                    <field name="partner_id" string="Partner"/>
+                    <filter name="draft" string="Draft" domain="[('c_state','=','draft')]" help="Draft Invoices"/>
+                    <filter name="proforma" string="Proforma" domain="[('c_state','=','proforma2')]" help="Proforma Invoices" groups="account.group_proforma_invoices"/>
+                    <filter name="invoices" string="Invoices" domain="[('c_state','not in',['draft','cancel'])]" help="Proforma/Open/Paid Invoices"/>
+                    <filter name="unpaid" string="Unpaid" domain="[('c_state','=','open')]" help="Unpaid Invoices"/>
+                    <separator/>
+                    <filter name="sale" string="Sale" domain="[('c_type','in',['out_invoice','out_refund'])]" help="Sale Invoices"/>
+                    <filter name="purchase" string="Purchase" domain="[('c_type','in',['in_invoice', 'in_refund'])]" help="Purchase Invoices"/>
+                    <group expand="0" string="Group By">
+                        <filter name="group_by_partner_id" string="Partner" context="{'group_by':'partner_id'}"/>
+                        <filter name="group_by_product_id" string="Product" context="{'group_by':'product_id'}"/>
+                    </group>
+               </search>
+            </field>
+        </record>        
+        
+        <record id="action_invoice_line_tree1" model="ir.actions.act_window">
+            <field name="name">Product Price History</field>
+            <field name="res_model">account.invoice.line</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field eval="False" name="view_id"/>
+            <field name="search_view_id" ref="view_account_invoice_line_filter"/>
+            <field name="domain">[('product_id','!=',False)]</field>
+        </record>
+        
+        <record id="action_invoice_line_tree1_view1" model="ir.actions.act_window.view">
+            <field eval="1" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="act_window_id" ref="action_invoice_line_tree1"/>
+        </record>
+
+        <record id="action_invoice_line_tree1_view2" model="ir.actions.act_window.view">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_invoice_line_form2"/>
+            <field name="act_window_id" ref="action_invoice_line_tree1"/>
+        </record>
+        
+        <menuitem action="action_invoice_line_tree1" 
+            id="menu_action_invoice_line_tree1" parent="purchase.menu_procurement_management_product"
+            groups="purchase.group_purchase_manager,purchase.group_purchase_user"/>
+        <menuitem action="action_invoice_line_tree1" 
+            id="menu_action_invoice_line_tree1_sale" parent="base.menu_product" 
+            groups="base.group_sale_salesman,base.group_sale_manager"/>
+    </data>
+</openerp>
